@@ -36,10 +36,16 @@ Router.get("/:id",async(req,res)=>{
     }
 })
 
-Router.put("/:id",async(req,res)=>{
-    try{
-        const updatedOrder=await Order.findByIdAndUpdate(req.params.id,req.body,{new:true})
-        res.json(updatedOrder)
+Router.put("/:id/status",async(req,res)=>{
+    try {
+        const { status } = req.body; // e.g., "Shipped", "Delivered"
+        const order = await Order.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            { new: true }
+        );
+        if (!order) return res.status(404).send("Order not found");
+        res.status(200).json(order);
     }
     catch(err){
         console.log(err)
