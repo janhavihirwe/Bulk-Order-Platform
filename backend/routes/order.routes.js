@@ -14,6 +14,17 @@ Router.post("/",async(req,res)=>{
     }
 })
 
+Router.get("/",async(req,res)=>{
+    try{
+        const orders=await Order.find()
+        res.json(orders)
+    }
+    catch(err){
+        console.log(err)
+        res.send(err)
+    }
+})
+
 Router.get("/:id",async(req,res)=>{
     try{
         const order=await Order.findById(req.params.id).populate("product")
