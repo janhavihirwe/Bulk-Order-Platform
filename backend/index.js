@@ -3,6 +3,8 @@ const mongoose=require("mongoose")
 const connect=require("./config/db")
 const productRoute=require("./routes/products.routes")
 const orderRoute=require("./routes/order.routes")
+const loginRoute=require("./routes/loginRoutes")
+const inventoryRoutes=require("./routes/inventoryRoutes")
 const cors=require("cors")
 const { config } = require("dotenv")
 require("dotenv").config()
@@ -14,6 +16,8 @@ app.use(cors({
 app.use(express.json())
 app.use("/product",productRoute)
 app.use("/order",orderRoute)
+app.use("/login",loginRoute)
+app.use("/inventory",inventoryRoutes)
 
 app.get("/",(req,res)=>{
     res.send("Welcome to Bulk Ordering Platform")
