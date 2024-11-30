@@ -15,10 +15,11 @@ Router.post("/",async(req,res)=>{
 })
 
 Router.get("/",async(req,res)=>{
-    try{
-        const orders=await Order.find().populate("product")
-        res.json(orders)
-    }
+    const { buyerName } = req.query;
+    try {
+      const orders = await Order.find({ buyerName });
+      res.status(200).json(orders);
+    } 
     catch(err){
         console.log(err)
         res.send(err)
