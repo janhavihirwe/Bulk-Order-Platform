@@ -9,10 +9,52 @@ const OrderForm = ({ product, onClose }) => {
   const [contactInfo, setContactInfo] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  const validateFields = () => {
+    const newErrors = {};
+
+    // Name validation
+    if (!buyerName.trim()) {
+      newErrors.buyerName = "Name is required.";
+    } else if (!/^[a-zA-Z\s]+$/.test(buyerName)) {
+      newErrors.buyerName = "Name should contain only letters and spaces.";
+    }
+
+    // Contact info validation
+    if (!contactInfo.trim()) {
+      newErrors.contactInfo = "Contact information is required.";
+    } else if (
+      !/^(\+?\d{1,4}[-.\s]?)?(\d{10}|\w+@\w+\.\w+)$/.test(contactInfo)
+    ) {
+      newErrors.contactInfo = "Enter a valid phone number or email address.";
+    }
+
+    // Delivery address validation
+    if (!deliveryAddress.trim()) {
+      newErrors.deliveryAddress = "Delivery address is required.";
+    } else if (deliveryAddress.trim().length < 10) {
+      newErrors.deliveryAddress = "Delivery address should be at least 10 characters long.";
+    }
+
+    // Quantity validation
+    if (!quantity || quantity < 1) {
+      newErrors.quantity = "Quantity must be at least 1.";
+    }
+
+    setErrors(newErrors);
+
+    // Return true if no errors
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateFields()) {
+      return;
+    }
 
     try {
       await axios.post("https://bulk-order-platform-1.onrender.com/order", {
@@ -23,10 +65,11 @@ const OrderForm = ({ product, onClose }) => {
         quantity,
       });
       toast.success("Order placed successfully!");
-      navigate('/orders', { state: { buyerName } });
+      navigate("/orders", { state: { buyerName } });
       onClose();
     } catch (err) {
       console.error("Error placing order:", err.message);
+      toast.error("Failed to place the order. Try again.");
     }
   };
 
@@ -39,15 +82,11 @@ const OrderForm = ({ product, onClose }) => {
         <h2>Order Form</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>
-              Product:
-            </label>
+            <label>Product:</label>
             <span>{product?.name || "N/A"}</span>
           </div>
           <div className="form-group">
-            <label>
-              Price:
-            </label>
+            <label>Price:</label>
             <span>${product?.pricePerUnit || "N/A"}</span>
           </div>
           <div className="form-group">
@@ -61,6 +100,7 @@ const OrderForm = ({ product, onClose }) => {
               min="1"
               required
             />
+            {errors.quantity && <p className="error">{errors.quantity}</p>}
           </div>
           <div className="form-group">
             <label>
@@ -72,6 +112,7 @@ const OrderForm = ({ product, onClose }) => {
               onChange={(e) => setBuyerName(e.target.value)}
               required
             />
+            {errors.buyerName && <p className="error">{errors.buyerName}</p>}
           </div>
           <div className="form-group">
             <label>
@@ -83,6 +124,7 @@ const OrderForm = ({ product, onClose }) => {
               onChange={(e) => setContactInfo(e.target.value)}
               required
             />
+            {errors.contactInfo && <p className="error">{errors.contactInfo}</p>}
           </div>
           <div className="form-group">
             <label>
@@ -93,6 +135,7 @@ const OrderForm = ({ product, onClose }) => {
               onChange={(e) => setDeliveryAddress(e.target.value)}
               required
             ></textarea>
+            {errors.deliveryAddress && <p className="error">{errors.deliveryAddress}</p>}
           </div>
           <div className="button-group">
             <button type="submit" className="submit-button">
@@ -100,8 +143,8 @@ const OrderForm = ({ product, onClose }) => {
             </button>
           </div>
         </form>
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </div>
   );
 };
