@@ -20,11 +20,11 @@ function ProductCatalogue() {
   const handleAddToCart = (product) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      // Navigate to login if the user is not logged in
+
       toast.warning("Login to Proceed")
       navigate("/login");
     } else {
-      // Open the modal for adding product to cart
+      
       console.log(token)
       setSelectedProduct(product);
       setIsModalOpen(true);
@@ -32,7 +32,7 @@ function ProductCatalogue() {
   };
   
   const handleLogout = () => {
-    // Remove token from localStorage and update state
+    
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     toast.success("LogOut Succesfully!")
@@ -188,8 +188,8 @@ function ProductCatalogue() {
   {/* Check if a product is selected before rendering the order form */}
   {selectedProduct ? (
     <OrderForm
-      product={selectedProduct} // Pass the selected product as a prop
-      onClose={closeModal} // Close modal when form submission is successful
+      product={selectedProduct} 
+      onClose={closeModal} 
     />
   ) : (
     <div style={{ padding: "20px", textAlign: "center" }}>

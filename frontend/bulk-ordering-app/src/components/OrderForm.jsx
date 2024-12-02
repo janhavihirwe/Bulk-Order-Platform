@@ -15,14 +15,13 @@ const OrderForm = ({ product, onClose }) => {
   const validateFields = () => {
     const newErrors = {};
 
-    // Name validation
+    
     if (!buyerName.trim()) {
       newErrors.buyerName = "Name is required.";
     } else if (!/^[a-zA-Z\s]+$/.test(buyerName)) {
       newErrors.buyerName = "Name should contain only letters and spaces.";
     }
 
-    // Contact info validation
     if (!contactInfo.trim()) {
       newErrors.contactInfo = "Contact information is required.";
     } else if (
@@ -31,21 +30,21 @@ const OrderForm = ({ product, onClose }) => {
       newErrors.contactInfo = "Enter a valid phone number or email address.";
     }
 
-    // Delivery address validation
+   
     if (!deliveryAddress.trim()) {
       newErrors.deliveryAddress = "Delivery address is required.";
     } else if (deliveryAddress.trim().length < 10) {
       newErrors.deliveryAddress = "Delivery address should be at least 10 characters long.";
     }
 
-    // Quantity validation
+   
     if (!quantity || quantity < 1) {
       newErrors.quantity = "Quantity must be at least 1.";
     }
 
     setErrors(newErrors);
 
-    // Return true if no errors
+    
     return Object.keys(newErrors).length === 0;
   };
 

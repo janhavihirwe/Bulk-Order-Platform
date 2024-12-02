@@ -13,7 +13,7 @@ function Login() {
     try {
       console.log(username, password);
 
-      // Use fetch for the API call
+      
       const response = await fetch("https://bulk-order-platform-1.onrender.com/login/login", {
         method: "POST",
         headers: {
@@ -28,10 +28,10 @@ function Login() {
       toast.success("Log In successfully!");
       const { token, role } = await response.json();
 
-      // Store token in localStorage
+      
       localStorage.setItem("token", token);
 
-      // Redirect based on role
+      
       if (role === "admin") {
         navigate("/inventory");
       } else {

@@ -4,13 +4,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const OrdersPage = () => {
   const { state } = useLocation();
-  const buyerName = state?.buyerName || ""; // Get buyerName from navigation state
+  const buyerName = state?.buyerName || ""; 
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [hasLoaded, setHasLoaded] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch orders only when the component loads and buyerName is provided
+  
   useEffect(() => {
     if (buyerName) {
       const fetchOrders = async () => {
@@ -30,7 +30,7 @@ const OrdersPage = () => {
     }
   }, [buyerName]);
 
-  // Filter orders based on buyerName
+  
   useEffect(() => {
     if (buyerName) {
       const filtered = orders.filter((order) => order.buyerName === buyerName);
@@ -52,7 +52,7 @@ const OrdersPage = () => {
       );
       if (!response.ok) throw new Error("Failed to update status");
 
-      // Update the UI with the new status
+      
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order._id === orderId ? { ...order, status: newStatus } : order

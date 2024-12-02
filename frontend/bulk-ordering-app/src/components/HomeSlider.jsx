@@ -31,15 +31,15 @@ const HomeSlider = () => {
     },
   ];
 
-  // Slider settings
+  
   const settings = {
-    dots: true,          // Show navigation dots
-    infinite: true,      // Infinite scrolling
-    speed: 500,          // Transition speed (ms)
-    slidesToShow: 1,     // Show one image at a time
-    slidesToScroll: 1,   // Scroll one image at a time
-    autoplay: true,      // Enable automatic sliding
-    autoplaySpeed: 3000, // Time between slides (ms)
+    dots: true,          
+    infinite: true,     
+    speed: 500,         
+    slidesToShow: 1,   
+    slidesToScroll: 1,   
+    autoplay: true,      
+    autoplaySpeed: 3000, 
     responsive: [
       {
         breakpoint: 1024,

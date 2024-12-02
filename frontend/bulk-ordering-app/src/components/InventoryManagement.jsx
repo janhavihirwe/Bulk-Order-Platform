@@ -65,7 +65,6 @@ function InventoryManagement() {
   };
 
   const handleLogout = () => {
-    // Remove token from localStorage and update state
     localStorage.removeItem("token");
     toast.success("LogOut Succesfully!")
     navigate("/login");
