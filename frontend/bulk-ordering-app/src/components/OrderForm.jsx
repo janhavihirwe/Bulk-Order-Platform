@@ -2,29 +2,31 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./OrderForm.css";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const OrderForm = ({ product, onClose }) => {
   const [buyerName, setBuyerName] = useState("");
   const [contactInfo, setContactInfo] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("https://bulk-order-platform.onrender.com/order", {
+      await axios.post("https://bulk-order-platform-1.onrender.com/order", {
         buyerName,
         contactInfo,
         deliveryAddress,
         product: product._id,
         quantity,
       });
-      // <ToastContainer/>
       toast.success("Order placed successfully!");
+      navigate('/orders', { state: { buyerName } });
       onClose();
     } catch (err) {
-      alert("Error placing order:", err.message);
+      console.error("Error placing order:", err.message);
     }
   };
 
@@ -37,24 +39,33 @@ const OrderForm = ({ product, onClose }) => {
         <h2>Order Form</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Product:</label>
-            <span>{product.name}</span>
+            <label>
+              Product:
+            </label>
+            <span>{product?.name || "N/A"}</span>
           </div>
           <div className="form-group">
-            <label>Price:</label>
-            <span>${product.pricePerUnit}</span>
+            <label>
+              Price:
+            </label>
+            <span>${product?.pricePerUnit || "N/A"}</span>
           </div>
           <div className="form-group">
-            <label>Quantity:</label>
+            <label>
+              Quantity: <span className="required">*</span>
+            </label>
             <input
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}
               min="1"
+              required
             />
           </div>
           <div className="form-group">
-            <label>Buyer Name:</label>
+            <label>
+              Buyer Name: <span className="required">*</span>
+            </label>
             <input
               type="text"
               value={buyerName}
@@ -63,7 +74,9 @@ const OrderForm = ({ product, onClose }) => {
             />
           </div>
           <div className="form-group">
-            <label>Contact Info:</label>
+            <label>
+              Contact Info: <span className="required">*</span>
+            </label>
             <input
               type="text"
               value={contactInfo}
@@ -72,7 +85,9 @@ const OrderForm = ({ product, onClose }) => {
             />
           </div>
           <div className="form-group">
-            <label>Delivery Address:</label>
+            <label>
+              Delivery Address: <span className="required">*</span>
+            </label>
             <textarea
               value={deliveryAddress}
               onChange={(e) => setDeliveryAddress(e.target.value)}
@@ -86,6 +101,7 @@ const OrderForm = ({ product, onClose }) => {
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

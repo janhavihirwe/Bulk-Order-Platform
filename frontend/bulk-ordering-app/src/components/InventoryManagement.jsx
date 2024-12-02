@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { FaHome } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function InventoryManagement() {
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({ name: "", imgURL: "", pricePerUnit: "" });
   const [editProduct, setEditProduct] = useState(null);
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("https://bulk-order-platform.onrender.com/inventory");
+      const res = await axios.get("https://bulk-order-platform-1.onrender.com/inventory");
       setProducts(res.data);
     } catch (err) {
       console.error("Error fetching products", err);
@@ -21,8 +25,10 @@ function InventoryManagement() {
 
   const handleAddProduct = async () => {
     try {
-    console.log(newProduct)
-      await axios.post("https://bulk-order-platform.onrender.com/inventory", newProduct, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+      await axios.post("https://bulk-order-platform-1.onrender.com/inventory", newProduct, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      toast.success("Product Added Successfully!")
       fetchProducts();
       setNewProduct({ name: "", imgURL: "", pricePerUnit: "" });
     } catch (err) {
@@ -32,7 +38,12 @@ function InventoryManagement() {
 
   const handleEditProduct = async () => {
     try {
-      await axios.put(`https://bulk-order-platform.onrender.com/inventory/${editProduct._id}`, editProduct, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+      await axios.put(
+        `https://bulk-order-platform-1.onrender.com/inventory/${editProduct._id}`,
+        editProduct,
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+      toast.success("Product Updated Successfully!")
       fetchProducts();
       setEditProduct(null);
     } catch (err) {
@@ -42,16 +53,45 @@ function InventoryManagement() {
 
   const handleDeleteProduct = async (id) => {
     try {
-        console.log("Deleting product with ID:", id);
-      await axios.delete(`https://bulk-order-platform.onrender.com/inventory/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+      console.log("Deleting product",id)
+      await axios.delete(`https://bulk-order-platform-1.onrender.com/inventory/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      toast.success("Product Deleted Successfully!")
       fetchProducts();
     } catch (err) {
       console.error("Error deleting product", err);
     }
   };
 
+  const handleLogout = () => {
+    // Remove token from localStorage and update state
+    localStorage.removeItem("token");
+    toast.success("LogOut Succesfully!")
+    navigate("/login");
+  };
+
   return (
     <div>
+      <div style={{background:"#4caf50", color: 'white', padding: '3px', borderRadius: '2px',display:"flex",height:"60px",alignItems:"center"}}>
+      <FaHome style={{marginLeft:"30px",fontSize: '30px', cursor: 'pointer'}} onClick={() => navigate("/")} />
+      <h1 style={{margin:"auto"}}>Bulk Ordering Platform</h1>
+      <div
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+              }}
+              onClick={handleLogout}
+              title="Logout"
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/126/126467.png"
+                alt="Logout Icon"
+                style={{ width: "30px" }}
+              />
+            </div>
+      </div>
       <h1>Inventory Management</h1>
       <div>
         <input
@@ -100,15 +140,64 @@ function InventoryManagement() {
         </div>
       )}
 
-      <ul>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gap: "16px",
+          marginTop: "20px",
+        }}
+      >
         {products.map((product) => (
-          <li key={product._id}>
-            {product.name} - ${product.pricePerUnit}
-            <button onClick={() => setEditProduct(product)}>Edit</button>
-            <button onClick={() => handleDeleteProduct(product._id)}>Delete</button>
-          </li>
+          <div
+            key={product._id}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              padding: "16px",
+              textAlign: "center",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <img
+              src={product.imgURL}
+              alt={product.name}
+              style={{ width: "100%", height: "60%", borderRadius: "4px" }}
+            />
+            <h3 style={{ margin: "12px 0 8px", fontSize: "18px" }}>{product.name}</h3>
+            <p style={{ fontSize: "16px", color: "#333" }}>Rs.{product.pricePerUnit}</p>
+            <button
+              onClick={() => setEditProduct(product)}
+              style={{
+                marginTop: "8px",
+                marginRight: "4px",
+                padding: "8px 12px",
+                border: "none",
+                borderRadius: "4px",
+                backgroundColor: "#007bff",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDeleteProduct(product._id)}
+              style={{
+                marginTop: "8px",
+                padding: "8px 12px",
+                border: "none",
+                borderRadius: "4px",
+                backgroundColor: "#dc3545",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Delete
+            </button>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

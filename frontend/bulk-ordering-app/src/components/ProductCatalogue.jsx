@@ -3,6 +3,9 @@ import axios from 'axios';
 import Modal from './Modal';
 import OrderForm from './OrderForm';
 import { useNavigate } from "react-router-dom";
+import HomeSlider from './HomeSlider';
+import { toast } from 'react-toastify';
+
 
 
 function ProductCatalogue() {
@@ -11,20 +14,40 @@ function ProductCatalogue() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);   
   const [error, setError] = useState(null);     
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate(); 
 
   const handleAddToCart = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);  
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // Navigate to login if the user is not logged in
+      toast.warning("Login to Proceed")
+      navigate("/login");
+    } else {
+      // Open the modal for adding product to cart
+      console.log(token)
+      setSelectedProduct(product);
+      setIsModalOpen(true);
+    }
   };
   
+  const handleLogout = () => {
+    // Remove token from localStorage and update state
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    toast.success("LogOut Succesfully!")
+    navigate("/login");
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);  
     setSelectedProduct(null);  
   };
 
   useEffect(() => {
-    axios.get("https://bulk-order-platform.onrender.com/product")  
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+    axios.get("https://bulk-order-platform-1.onrender.com/product")  
       .then(response => {
         setProducts(response.data);  
         setLoading(false);            
@@ -44,44 +67,81 @@ function ProductCatalogue() {
   }
   return (
     <div style={{width:"100%"}}>
-      <div style={{background:"#4caf50", color: 'white', padding: '3px', borderRadius: '2px',display:"flex",justifyContent:"space-evenly"}}>
-        <h1 style={{marginLeft:"40px"}}>Bulk Ordering Platform</h1>
-        <div
-        style={{
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          marginRight:"10px"
-        }}
-        onClick={() => navigate("/orders")}
-      >
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png"
-          alt="Cart Icon"
-          style={{ width: "30px", height: "30px" }}
-        />
-      </div>
       <div
-            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-            onClick={() => navigate("/login")}
-            title="Login"
-          >
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/891/891399.png"
-              alt="Login Icon"
-              style={{ width: "30px", height: "30px" }}
-            />
-      </div>
-      <div style={{ cursor: "pointer", display: "flex", alignItems: "center" }} onClick={() => navigate("/signup")} title="Sign Up">
-    <img src="https://cdn-icons-png.flaticon.com/512/1233/1233896.png" alt="Sign Up Icon" style={{ width: "30px" }} />
+  style={{
+    background: "#4caf50",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0 20px",
+    borderRadius: "2px",
+    height: "80px",
+  }}
+>
+  <h1 style={{ flex: "1", textAlign: "center", marginLeft: 125 }}>
+    Bulk Ordering Platform
+  </h1>
+  <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+    <div
+      style={{
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+      }}
+      onClick={() => navigate("/orders")}
+    >
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png"
+        alt="Cart Icon"
+        style={{ width: "30px", height: "30px" }}
+      />
+    </div>
+    {isLoggedIn ? (
+            <div
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+              }}
+              onClick={handleLogout}
+              title="Logout"
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/126/126467.png"
+                alt="Logout Icon"
+                style={{ width: "30px" }}
+              />
+            </div>
+          ) : (
+            <>
+              <div
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                onClick={() => navigate("/login")}
+                title="Login"
+              >
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/891/891399.png"
+                  alt="Login Icon"
+                  style={{ width: "30px", height: "30px" }}
+                />
+              </div>
+            </>
+          )}
   </div>
-      </div> 
+</div>
+
+      <HomeSlider/>
       <div style={{
         display: 'flex',
         flexWrap: 'wrap',
         gap: '20px',
         justifyContent: 'center',
-        padding: '20px',
+        padding: '25px',
       }}>
         {products.map((product) => (
           <div 
@@ -123,6 +183,7 @@ function ProductCatalogue() {
           </div>
           ))}
       </div>
+      
       <Modal isOpen={isModalOpen} onClose={closeModal}>
   {/* Check if a product is selected before rendering the order form */}
   {selectedProduct ? (
